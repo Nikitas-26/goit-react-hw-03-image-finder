@@ -1,25 +1,40 @@
-import logo from './logo.svg';
+import { Component } from 'react';
 import './App.css';
+import SearchBar from './components/Searchbar/Searchbar';
+import getPhotos from './services/services'
+import ImageGalleryList from './components/ImageGallery/ImageGallery';
+import Button from './components/Button/Button';
 
-function App() {
-  return (
+class App extends Component {
+  state = {
+  value: '',
+  images : [],
+  page : 1,
+  // iterator:40
+  }
+  componentDidUpdate(prevProps,prevState){
+  if(prevState.page !==this.state.page || prevState.value !== this.state.value){
+    getPhotos(this.state.value,this.state.page).then((data)=>{this.setState(prev=>({images:[...prev.images,...data.hits]}))})
+  }
+  
+  }
+  OnbtnClick = (e) =>{
+  this.setState({page: this.state.page+1})
+  // this.setState({iterator: this.state.iterator+40})
+  
+  }
+ 
+  onBtnSubmit  = (value) =>{
+   this.setState({value})
+  }
+  render() {return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+     <SearchBar onBtnSubmit={this.onBtnSubmit}/>
+     <ImageGalleryList images={this.state.images} />
+     <Button OnbtnClick={this.OnbtnClick}/>
     </div>
-  );
+  )}
+  
 }
 
 export default App;
